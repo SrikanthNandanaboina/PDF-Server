@@ -32,6 +32,10 @@ app.use("/assets", express.static(assetsFolderPath));
 
 app.get("/generate-pdf", async (req, res) => {
   try {
+    if (!process.env.URL) {
+      throw new Error("URL is missing in .env");
+    }
+
     const crimeResult = await axios.get(
       "https://api.usa.gov/crime/fbi/cde/arrest/state/AK/all?from=2015&to=2020&API_KEY=iiHnOKfno2Mgkt5AynpvPpUQTEyxE77jo1RU8PIv"
     );
@@ -247,7 +251,7 @@ app.get("/generate-pdf", async (req, res) => {
     res.send({ status: "SUCCESS", url: process.env.URL });
   } catch (error) {
     console.error("Error generating PDF:", error);
-    res.status(500).send("Error generating PDF");
+    res.status(500).send(error.message || "Error generating PDF");
   }
 });
 
